@@ -830,6 +830,339 @@ server.tool(
   }
 );
 
+// === WRITE TOOLS ===
+
+// Add a deal
+server.tool(
+  "add-deal",
+  "Create a new deal in Pipedrive",
+  {
+    title: z.string().describe("Deal title"),
+    value: z.number().optional().describe("Deal value"),
+    currency: z.string().optional().describe("Currency code (e.g. USD, EUR)"),
+    status: z.enum(['open', 'won', 'lost']).optional().describe("Deal status (default: open)"),
+    person_id: z.number().optional().describe("ID of the person linked to the deal"),
+    org_id: z.number().optional().describe("ID of the organization linked to the deal"),
+    pipeline_id: z.number().optional().describe("Pipeline ID"),
+    stage_id: z.number().optional().describe("Stage ID"),
+    expected_close_date: z.string().optional().describe("Expected close date (YYYY-MM-DD)"),
+    lost_reason: z.string().optional().describe("Reason for losing the deal"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await dealsApi.addDeal(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding deal:", error);
+      return { content: [{ type: "text", text: `Error adding deal: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update a deal
+server.tool(
+  "update-deal",
+  "Update an existing deal in Pipedrive",
+  {
+    dealId: z.number().describe("Pipedrive deal ID"),
+    title: z.string().optional().describe("Deal title"),
+    value: z.number().optional().describe("Deal value"),
+    currency: z.string().optional().describe("Currency code (e.g. USD, EUR)"),
+    status: z.enum(['open', 'won', 'lost']).optional().describe("Deal status"),
+    person_id: z.number().optional().describe("ID of the person linked to the deal"),
+    org_id: z.number().optional().describe("ID of the organization linked to the deal"),
+    pipeline_id: z.number().optional().describe("Pipeline ID"),
+    stage_id: z.number().optional().describe("Stage ID"),
+    expected_close_date: z.string().optional().describe("Expected close date (YYYY-MM-DD)"),
+    lost_reason: z.string().optional().describe("Reason for losing the deal"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async ({ dealId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await dealsApi.updateDeal(dealId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating deal ${dealId}:`, error);
+      return { content: [{ type: "text", text: `Error updating deal ${dealId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Add a person
+server.tool(
+  "add-person",
+  "Create a new person in Pipedrive",
+  {
+    name: z.string().describe("Person's full name"),
+    email: z.array(z.string()).optional().describe("Email address(es)"),
+    phone: z.array(z.string()).optional().describe("Phone number(s)"),
+    org_id: z.number().optional().describe("Organization ID to link this person to"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await personsApi.addPerson(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding person:", error);
+      return { content: [{ type: "text", text: `Error adding person: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update a person
+server.tool(
+  "update-person",
+  "Update an existing person in Pipedrive",
+  {
+    personId: z.number().describe("Pipedrive person ID"),
+    name: z.string().optional().describe("Person's full name"),
+    email: z.array(z.string()).optional().describe("Email address(es)"),
+    phone: z.array(z.string()).optional().describe("Phone number(s)"),
+    org_id: z.number().optional().describe("Organization ID"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async ({ personId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await personsApi.updatePerson(personId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating person ${personId}:`, error);
+      return { content: [{ type: "text", text: `Error updating person ${personId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Add an organization
+server.tool(
+  "add-organization",
+  "Create a new organization in Pipedrive",
+  {
+    name: z.string().describe("Organization name"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await organizationsApi.addOrganization(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding organization:", error);
+      return { content: [{ type: "text", text: `Error adding organization: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update an organization
+server.tool(
+  "update-organization",
+  "Update an existing organization in Pipedrive",
+  {
+    organizationId: z.number().describe("Pipedrive organization ID"),
+    name: z.string().optional().describe("Organization name"),
+    visible_to: z.number().optional().describe("Visibility (1=owner, 3=entire company)")
+  },
+  async ({ organizationId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await organizationsApi.updateOrganization(organizationId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating organization ${organizationId}:`, error);
+      return { content: [{ type: "text", text: `Error updating organization ${organizationId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Add a note
+server.tool(
+  "add-note",
+  "Add a note to a deal, person, or organization in Pipedrive",
+  {
+    content: z.string().describe("Note content (HTML supported)"),
+    deal_id: z.number().optional().describe("Deal ID to attach the note to"),
+    person_id: z.number().optional().describe("Person ID to attach the note to"),
+    org_id: z.number().optional().describe("Organization ID to attach the note to"),
+    pinned_to_deal_flag: z.boolean().optional().describe("Pin note to deal"),
+    pinned_to_person_flag: z.boolean().optional().describe("Pin note to person"),
+    pinned_to_organization_flag: z.boolean().optional().describe("Pin note to organization")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await notesApi.addNote(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding note:", error);
+      return { content: [{ type: "text", text: `Error adding note: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update a note
+server.tool(
+  "update-note",
+  "Update an existing note in Pipedrive",
+  {
+    noteId: z.number().describe("Pipedrive note ID"),
+    content: z.string().optional().describe("Note content (HTML supported)"),
+    pinned_to_deal_flag: z.boolean().optional().describe("Pin note to deal"),
+    pinned_to_person_flag: z.boolean().optional().describe("Pin note to person"),
+    pinned_to_organization_flag: z.boolean().optional().describe("Pin note to organization")
+  },
+  async ({ noteId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await notesApi.updateNote(noteId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating note ${noteId}:`, error);
+      return { content: [{ type: "text", text: `Error updating note ${noteId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Add an activity
+server.tool(
+  "add-activity",
+  "Create a new activity (call, meeting, task, etc.) in Pipedrive",
+  {
+    subject: z.string().describe("Activity subject/title"),
+    type: z.string().optional().describe("Activity type (call, meeting, task, deadline, email, lunch)"),
+    due_date: z.string().optional().describe("Due date (YYYY-MM-DD)"),
+    due_time: z.string().optional().describe("Due time (HH:MM)"),
+    duration: z.string().optional().describe("Duration (HH:MM)"),
+    deal_id: z.number().optional().describe("Deal ID to link this activity to"),
+    person_id: z.number().optional().describe("Person ID to link this activity to"),
+    org_id: z.number().optional().describe("Organization ID to link this activity to"),
+    note: z.string().optional().describe("Activity note"),
+    done: z.boolean().optional().describe("Whether activity is done")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await activitiesApi.addActivity(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding activity:", error);
+      return { content: [{ type: "text", text: `Error adding activity: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update an activity
+server.tool(
+  "update-activity",
+  "Update an existing activity in Pipedrive",
+  {
+    activityId: z.number().describe("Pipedrive activity ID"),
+    subject: z.string().optional().describe("Activity subject/title"),
+    type: z.string().optional().describe("Activity type (call, meeting, task, deadline, email, lunch)"),
+    due_date: z.string().optional().describe("Due date (YYYY-MM-DD)"),
+    due_time: z.string().optional().describe("Due time (HH:MM)"),
+    duration: z.string().optional().describe("Duration (HH:MM)"),
+    deal_id: z.number().optional().describe("Deal ID"),
+    person_id: z.number().optional().describe("Person ID"),
+    org_id: z.number().optional().describe("Organization ID"),
+    note: z.string().optional().describe("Activity note"),
+    done: z.boolean().optional().describe("Whether activity is done")
+  },
+  async ({ activityId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await activitiesApi.updateActivity(activityId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating activity ${activityId}:`, error);
+      return { content: [{ type: "text", text: `Error updating activity ${activityId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Add a lead
+server.tool(
+  "add-lead",
+  "Create a new lead in Pipedrive",
+  {
+    title: z.string().describe("Lead title"),
+    person_id: z.number().optional().describe("Person ID to link this lead to"),
+    organization_id: z.number().optional().describe("Organization ID to link this lead to"),
+    value: z.object({
+      amount: z.number(),
+      currency: z.string()
+    }).optional().describe("Lead value e.g. { amount: 1000, currency: 'USD' }"),
+    expected_close_date: z.string().optional().describe("Expected close date (YYYY-MM-DD)"),
+    note: z.string().optional().describe("Note about the lead")
+  },
+  async (opts) => {
+    try {
+      // @ts-ignore
+      const response = await leadsApi.addLead(opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error("Error adding lead:", error);
+      return { content: [{ type: "text", text: `Error adding lead: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
+// Update a lead
+server.tool(
+  "update-lead",
+  "Update an existing lead in Pipedrive",
+  {
+    leadId: z.string().describe("Pipedrive lead ID (UUID)"),
+    title: z.string().optional().describe("Lead title"),
+    person_id: z.number().optional().describe("Person ID"),
+    organization_id: z.number().optional().describe("Organization ID"),
+    value: z.object({
+      amount: z.number(),
+      currency: z.string()
+    }).optional().describe("Lead value e.g. { amount: 1000, currency: 'USD' }"),
+    expected_close_date: z.string().optional().describe("Expected close date (YYYY-MM-DD)"),
+    is_archived: z.boolean().optional().describe("Whether to archive the lead")
+  },
+  async ({ leadId, ...opts }) => {
+    try {
+      // @ts-ignore
+      const response = await leadsApi.updateLead(leadId, opts);
+      return {
+        content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+      };
+    } catch (error) {
+      console.error(`Error updating lead ${leadId}:`, error);
+      return { content: [{ type: "text", text: `Error updating lead ${leadId}: ${getErrorMessage(error)}` }], isError: true };
+    }
+  }
+);
+
 // === PROMPTS ===
 
 // Prompt for getting all deals
