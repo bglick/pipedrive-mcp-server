@@ -4,9 +4,10 @@ This is a Model Context Protocol (MCP) server that connects to the Pipedrive API
 
 ## Features
 
-- Read-only access to Pipedrive data
-- Exposes deals, persons, organizations, and pipelines
+- Read and write access to Pipedrive data
+- Exposes deals, persons, organizations, leads, activities, and notes
 - Includes all fields including custom fields
+- Create and update records in Pipedrive
 - Predefined prompts for common operations
 - Docker support with multi-stage builds
 - JWT authentication support
@@ -164,6 +165,8 @@ To use this server with Claude for Desktop:
 
 ## Available Tools
 
+### Read Tools
+
 - `get-users`: Get all users/owners from Pipedrive to identify owner IDs for filtering
 - `get-deals`: Get deals with flexible filtering options (search by title, date range, owner, stage, status, value range, etc.)
 - `get-deal`: Get a specific deal by ID (including custom fields)
@@ -180,6 +183,21 @@ To use this server with Claude for Desktop:
 - `get-stages`: Get all stages from all pipelines
 - `search-leads`: Search leads by term
 - `search-all`: Search across all item types (deals, persons, organizations, etc.)
+
+### Write Tools
+
+- `add-deal`: Create a new deal in Pipedrive with customizable fields (title, value, status, linked contacts, etc.)
+- `update-deal`: Update an existing deal with new information
+- `add-person`: Create a new person/contact in Pipedrive with email, phone, and organization links
+- `update-person`: Update an existing person's information
+- `add-organization`: Create a new organization in Pipedrive
+- `update-organization`: Update an existing organization's information
+- `add-note`: Add a note to a deal or person
+- `update-note`: Update an existing note
+- `add-activity`: Create a new activity/task in Pipedrive
+- `update-activity`: Update an existing activity
+- `add-lead`: Create a new lead in Pipedrive
+- `update-lead`: Update an existing lead
 
 ## Available Prompts
 
