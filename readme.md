@@ -186,18 +186,40 @@ To use this server with Claude for Desktop:
 
 ### Write Tools
 
-- `add-deal`: Create a new deal in Pipedrive with customizable fields (title, value, status, linked contacts, etc.)
+- `add-deal`: Create a new deal in Pipedrive with customizable fields (title, value, status, linked contacts, owner, label, etc.)
 - `update-deal`: Update an existing deal with new information
-- `add-person`: Create a new person/contact in Pipedrive with email, phone, and organization links
+- `delete-deal`: Delete a deal
+- `merge-deals`: Merge a deal into another deal
+- `add-deal-follower` / `remove-deal-follower`: Manage deal followers
+- `add-deal-product` / `update-deal-product` / `delete-deal-product`: Manage products (line items) attached to a deal
+- `add-person`: Create a new person/contact in Pipedrive with email, phone, organization, owner, and label
 - `update-person`: Update an existing person's information
+- `delete-person`: Delete a person
+- `merge-persons`: Merge a person into another person
+- `add-person-follower` / `remove-person-follower`: Manage person followers
 - `add-organization`: Create a new organization in Pipedrive
 - `update-organization`: Update an existing organization's information
-- `add-note`: Add a note to a deal or person
+- `delete-organization`: Delete an organization
+- `merge-organizations`: Merge an organization into another organization
+- `add-organization-follower` / `remove-organization-follower`: Manage organization followers
+- `add-note`: Add a note to a deal, person, organization, or lead
 - `update-note`: Update an existing note
+- `delete-note`: Delete a note
+- `add-note-comment` / `get-note-comments` / `update-note-comment` / `delete-note-comment`: Manage comments on a note
 - `add-activity`: Create a new activity/task in Pipedrive
 - `update-activity`: Update an existing activity
-- `add-lead`: Create a new lead in Pipedrive
+- `delete-activity`: Delete an activity
+- `add-lead`: Create a new lead in Pipedrive (to attach a note to a new lead, call `add-note` afterwards with the returned lead ID)
 - `update-lead`: Update an existing lead
+- `delete-lead`: Delete a lead
+- `get-products` / `get-product`: List or fetch products
+- `add-product` / `update-product` / `delete-product`: Manage products
+- `upload-file`: Upload a file and associate it with a deal, person, organization, product, activity, or lead
+- `link-file-to-item`: Link a remote (Google Drive) file to a deal, person, or organization
+- `delete-file`: Delete a file
+- `get-webhooks` / `add-webhook` / `delete-webhook`: Manage webhooks
+- `add-pipeline` / `update-pipeline` / `delete-pipeline`: Manage pipelines
+- `add-stage` / `update-stage` / `delete-stage`: Manage pipeline stages
 
 ## Available Prompts
 
