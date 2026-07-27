@@ -226,7 +226,10 @@ server.tool(
       if (searchTitle) {
         // @ts-ignore - Bypass incorrect TypeScript definition
         const searchResponse = await dealsApi.searchDeals(searchTitle);
-        filteredDeals = searchResponse.data || [];
+        // The search endpoint returns { data: { items: [{ item, result_score }] } },
+        // not a bare array like the list endpoint, so unwrap it here.
+        const searchItems = searchResponse.data?.items || [];
+        filteredDeals = searchItems.map((searchItem: any) => searchItem.item);
       } else {
         // Calculate the date filter (daysBack days ago)
         const filterDate = new Date();
@@ -266,8 +269,10 @@ server.tool(
       }
 
       // Filter by owner if specified and not already applied in API call
+      // Search results nest the owner id (deal.owner.id) instead of the flat
+      // deal.owner_id field the list endpoint returns.
       if (ownerId && searchTitle) {
-        filteredDeals = filteredDeals.filter((deal: any) => deal.owner_id === ownerId);
+        filteredDeals = filteredDeals.filter((deal: any) => deal.owner?.id === ownerId);
       }
 
       // Filter by status if specified and searching by title
@@ -276,12 +281,16 @@ server.tool(
       }
 
       // Filter by stage if specified and not already applied in API call
+      // Same nesting issue as owner: deal.stage.id, not deal.stage_id.
       if (stageId && (searchTitle || !stageId)) {
-        filteredDeals = filteredDeals.filter((deal: any) => deal.stage_id === stageId);
+        filteredDeals = filteredDeals.filter((deal: any) => deal.stage?.id === stageId);
       }
 
-      // Filter by pipeline if specified and not already applied in API call
-      if (pipelineId && (searchTitle || !pipelineId)) {
+      // Pipedrive's deal search endpoint doesn't return pipeline info at all,
+      // so pipelineId can't be honored for search results. Skip filtering
+      // (rather than filtering everything out) and flag it in the response.
+      const pipelineFilterSkipped = Boolean(pipelineId && searchTitle);
+      if (pipelineId && !searchTitle) {
         filteredDeals = filteredDeals.filter((deal: any) => deal.pipeline_id === pipelineId);
       }
 
@@ -311,6 +320,9 @@ server.tool(
         ...(pipelineId && { pipeline_id: pipelineId }),
         ...(minValue !== undefined && { min_value: minValue }),
         ...(maxValue !== undefined && { max_value: maxValue }),
+        ...(pipelineFilterSkipped && {
+          pipeline_filter_skipped: "Pipedrive's deal search API doesn't return pipeline info, so pipelineId can't be applied when searchTitle is set"
+        }),
         total_deals_found: filteredDeals.length,
         limit_applied: limit
       };
@@ -326,7 +338,7 @@ server.tool(
         stage_name: deal.stage?.name || 'Unknown',
         pipeline_name: deal.pipeline?.name || 'Unknown',
         owner_name: deal.owner?.name || 'Unknown',
-        organization_name: deal.org?.name || null,
+        organization_name: deal.org?.name || deal.organization?.name || null,
         person_name: deal.person?.name || null,
         add_time: deal.add_time,
         last_activity_date: deal.last_activity_date,
